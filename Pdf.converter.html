@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced PDF Converter</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.16.0/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.0/docx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .account-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .account-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .ad-banner {
+            background-color: #f0f0f0;
+            padding: 15px;
+            text-align: center;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px dashed #ccc;
+        }
+        .ad-banner p {
+            margin: 0;
+            color: #666;
+        }
+        .converter-container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+        .tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .drop-area {
+            border: 2px dashed #3498db;
+            border-radius: 5px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        .drop-area.highlight {
+            background-color: #eaf2f8;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #fileInput {
+            display: none;
+        }
+        .preview {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .preview img {
+            max-width: 100%;
+            max-height: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .text-options {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #eef7ff;
+            border-radius: 5px;
+        }
+        .text-options h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .text-options textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+            margin-bottom: 10px;
+        }
+        .text-options label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .text-options select, .text-options input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .options-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        .option-group {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Advanced PDF Converter</h1>
+        <div class="account-info">
+            <div class="account-avatar">JS</div>
+            <span>John Smith (Premium)</span>
+        </div>
+    </div>
+
+    <div class="ad-banner">
+        <p>ADVERTISEMENT</p>
+        <div id="adContent">
+            <!-- Ad content would be loaded here -->
+            <p>Upgrade to Premium for unlimited conversions!</p>
+            <button onclick="showPremiumModal()">Learn More</button>
+        </div>
+    </div>
+    
+    <div class="converter-container">
+        <div class="tabs">
+            <button class="tab active" onclick="openTab('imageTab')">Image to PDF</button>
+            <button class="tab" onclick="openTab('wordTab')">Word to PDF</button>
+            <button class="tab" onclick="openTab('textTab')">Text to PDF</button>
+        </div>
+        
+        <!-- Image to PDF Tab -->
+        <div id="imageTab" class="tab-content active">
+            <h2>Convert Images to PDF</h2>
+            <p>Upload one or more images to convert them to a PDF document.</p>
+            
+            <div id="imageDropArea" class="drop-area">
+                <p>Drag & drop images here or click to select files</p>
+                <input type="file" id="imageInput" accept="image/*" multiple>
+            </div>
+            
+            <div class="preview" id="imagePreview"></div>
+
+            <div class="text-options">
+                <h3>Add Text to Your PDF</h3>
+                <textarea id="imagePdfText" placeholder="Enter text you want to add to the PDF..."></textarea>
+                <div class="options-row">
+                    <div class="option-group">
+                        <label for="imageTextPosition">Text Position</label>
+                        <select id="imageTextPosition">
+                            <option value="first-page">First Page</option>
+                            <option value="last-page">Last Page</option>
+                            <option value="every-page">Every Page</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label for="imageTextSize">Text Size</label>
+                        <select id="imageTextSize">
+                            <option value="12">12pt</option>
+                            <option value="14">14pt</option>
+                            <option value="16">16pt</option>
+                            <option value="18">18pt</option>
+                            <option value="24">24pt</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="convertImagesBtn" onclick="convertImagesToPdf()">Convert to PDF</button>
+            
+            <div class="status" id="imageStatus"></div>
+        </div>
+        
+        <!-- Word to PDF Tab -->
+        <div id="wordTab" class="tab-content">
+            <h2>Convert Word to PDF</h2>
+            <p>Upload a Word document (.docx) to convert it to PDF.</p>
+            
+            <div id="wordDropArea" class="drop-area">
+                <p>Drag & drop Word file here or click to select file</p>
+                <input type="file" id="wordInput" accept=".docx">
+            </div>
+
+            <div class="text-options">
+                <h3>Add Additional Text</h3>
+                <textarea id="wordPdfText" placeholder="Enter additional text to append to the PDF..."></textarea>
+                <div class="options-row">
+                    <div class="option-group">
+                        <label for="wordTextPosition">Text Position</label>
+                        <select id="wordTextPosition">
+                            <option value="before">Before Document</option>
+                            <option value="after">After Document</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label for="wordTextSize">Text Size</label>
+                        <select id="wordTextSize">
+                            <option value="12">12pt</option>
+                            <option value="14">14pt</option>
+                            <option value="16">16pt</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="convertWordBtn" onclick="convertWordToPdf()">Convert to PDF</button>
+            
+            <div class="status" id="wordStatus"></div>
+        </div>
+
+        <!-- Text to PDF Tab -->
+        <div id="textTab" class="tab-content">
+            <h2>Create PDF from Text</h2>
+            <p>Type or paste your text to create a PDF document.</p>
+            
+            <div class="text-options">
+                <h3>PDF Content</h3>
+                <textarea id="pdfContent" placeholder="Enter your text here..."></textarea>
+                <div class="options-row">
+                    <div class="option-group">
+                        <label for="textTitle">Document Title</label>
+                        <input type="text" id="textTitle" placeholder="My Document">
+                    </div>
+                    <div class="option-group">
+                        <label for="textAuthor">Author</label>
+                        <input type="text" id="textAuthor" placeholder="Your Name">
+                    </div>
+                </div>
+                <div class="options-row">
+                    <div class="option-group">
+                        <label for="textFont">Font</label>
+                        <select id="textFont">
+                            <option value="Helvetica">Helvetica</option>
+                            <option value="Times-Roman">Times New Roman</option>
+                            <option value="Courier">Courier</option>
+                            <option value="Arial">Arial</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label for="textSize">Font Size</label>
+                        <select id="textSize">
+                            <option value="10">10pt</option>
+                            <option value="12">12pt</option>
+                            <option value="14">14pt</option>
+                            <option value="16">16pt</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label for="textMargin">Margin (mm)</label>
+                        <select id="textMargin">
+                            <option value="20">20</option>
+                            <option value="15">15</option>
+                            <option value="10">10</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="createPdfBtn" onclick="createTextPdf()">Create PDF</button>
+            
+            <div class="status" id="textStatus"></div>
+        </div>
+    </div>
+
+    <!-- Modal for premium ad -->
+    <div id="premiumModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background-color: white; padding: 30px; border-radius: 10px; max-width: 500px;">
+            <h2>Upgrade to Premium</h2>
+            <p>Get access to all features including:</p>
+            <ul>
+                <li>Unlimited conversions</li>
+                <li>Priority processing</li>
+                <li>No watermarks</li>
+                <li>Advanced editing options</li>
+            </ul>
+            <p>Only $9.99/month</p>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="hidePremiumModal()" style="background-color: #ccc; color: #333;">Maybe Later</button>
+                <button onclick="upgradeAccount()" style="background-color: #27ae60;">Upgrade Now</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab functionality
+        function openTab(tabName) {
+            const tabs = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            
+            const tabButtons = document.getElementsByClassName('tab');
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove('active');
+            }
+            
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+        
+        // Setup drop areas
+        function setupDropArea(dropAreaId, inputId, previewId = null) {
+            const dropArea = document.getElementById(dropAreaId);
+            const input = document.getElementById(inputId);
+            
+            dropArea.addEventListener('click', () => {
+                input.click();
+            });
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                dropArea.classList.add('highlight');
+            }
+            
+            function unhighlight() {
+                dropArea.classList.remove('highlight');
+            }
+            
+            dropArea.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                input.files = files;
+                handleFiles(files, previewId);
+            }
+            
+            input.addEventListener('change', function() {
+                handleFiles(this.files, previewId);
+            });
+        }
+        
+        // Handle uploaded files
+        function handleFiles(files, previewId = null) {
+            if (previewId) {
+                const preview = document.getElementById(previewId);
+                preview.innerHTML = '';
+                
+                if (files.length > 0) {
+                    const fileList = document.createElement('div');
+                    fileList.innerHTML = `<p>Selected files: ${files.length}</p>`;
+                    
+                    for (let i = 0; i < Math.min(files.length, 3); i++) {
+                        const file = files[i];
+                        if (file.type.startsWith('image/')) {
+                            const img = document.createElement('img');
+                            img.src = URL.createObjectURL(file);
+                            fileList.appendChild(img);
+                        }
+                    }
+                    
+                    if (files.length > 3) {
+                        fileList.innerHTML += `<p>+ ${files.length - 3} more files</p>`;
+                    }
+                    
+                    preview.appendChild(fileList);
+                }
+            }
+        }
+        
+        // Initialize drop areas
+        setupDropArea('imageDropArea', 'imageInput', 'imagePreview');
+        setupDropArea('wordDropArea', 'wordInput');
+        
+        // Convert images to PDF
+        async function convertImagesToPdf() {
+            const files = document.getElementById('imageInput').files;
+            const status = document.getElementById('imageStatus');
+            const customText = document.getElementById('imagePdfText').value;
+            const textPosition = document.getElementById('imageTextPosition').value;
+            const textSize = parseInt(document.getElementById('imageTextSize').value);
+            
+            if (files.length === 0 && !customText) {
+                status.innerHTML = 'Please select at least one image file or enter some text.';
+                status.className = 'status error';
+                return;
+            }
+            
+            status.innerHTML = 'Processing...';
+            status.className = 'status';
+            
+            try {
+                const { PDFDocument, rgb } = PDFLib;
+                const pdfDoc = await PDFDocument.create();
+                
+                // Add cover page if text is set to appear first
+                if (customText && textPosition === 'first-page') {
+                    await addTextPage(pdfDoc, customText, textSize);
+                }
+                
+                // Process each image
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    
+                    if (!file.type.startsWith('image/')) {
+                        continue; // Skip non-image files
+                    }
+                    
+                    // Create a new page for each image
+                    const imageBytes = await readFileAsArrayBuffer(file);
+                    let image;
+                    
+                    if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
+                        image = await pdfDoc.embedJpg(imageBytes);
+                    } else if (file.type === 'image/png') {
+                        image = await pdfDoc.embedPng(imageBytes);
+                    } else {
+                        status.innerHTML = `Unsupported image format: ${file.type}. Only JPG and PNG are supported.`;
+                        status.className = 'status error';
+                        return;
+                    }
+                    
+                    const page = pdfDoc.addPage([image.width, image.height]);
+                    page.drawImage(image, {
+                        x: 0,
+                        y: 0,
+                        width: image.width,
+                        height: image.height,
+                    });
+                    
+                    // Add text to every page if selected
+                    if (customText && textPosition === 'every-page') {
+                        page.drawText(customText, {
+                            x: 50,
+                            y: 50,
+                            size: textSize,
+                            color: rgb(0, 0, 0),
+                        });
+                    }
+                }
+                
+                // Add final page if text is set to appear last
+                if (customText && textPosition === 'last-page') {
+                    await addTextPage(pdfDoc, customText, textSize);
+                }
+                
+                if (pdfDoc.getPageCount() === 0 && !customText) {
+                    status.innerHTML = 'No valid image files were found.';
+                    status.className = 'status error';
+                    return;
+                }
+                
+                const pdfBytes = await pdfDoc.save();
+                saveAs(new Blob([pdfBytes], { type: 'application/pdf' }), 'converted_images.pdf');
+                
+                status.innerHTML = 'Conversion successful! PDF downloaded.';
+                status.className = 'status success';
+            } catch (error) {
+                console.error('Error converting images to PDF:', error);
+                status.innerHTML = 'Error during conversion: ' + error.message;
+                status.className = 'status error';
+            }
+        }
+        
+        // Helper function to add a text page
+        async function addTextPage(pdfDoc, text, size = 12) {
+            const { rgb } = PDFLib;
+            const page = pdfDoc.addPage([600, 800]);
+            
+            const lines = text.split('\n');
+            let yPosition = 750;
+            
+            for (const line of lines) {
+                if (line.trim() === '') {
+                    yPosition -= size * 1.5;
+                    continue;
+                }
+                
+                page.drawText(line, {
+                    x: 50,
+                    y: yPosition,
+                    size: size,
+                    color: rgb(0, 0, 0),
+                });
+                
+                yPosition -= size * 1.5;
+                
+                if (yPosition < 50) {
+                    // Start new page if we run out of space
+                    yPosition = 750;
+                    page = pdfDoc.addPage([600, 800]);
+                }
+            }
+        }
+        
+        // Convert Word to PDF (simplified - actual conversion would need a server component)
+        async function convertWordToPdf() {
+            const fileInput = document.getElementById('wordInput');
+            const status = document.getElementById('wordStatus');
+            const customText = document.getElementById('wordPdfText').value;
+            const textPosition = document.getElementById('wordTextPosition').value;
+            const textSize = parseInt(document.getElementById('wordTextSize').value);
+            
+            if (fileInput.files.length === 0 && !customText) {
+                status.innerHTML = 'Please select a Word document or enter some text.';
+                status.className = 'status error';
+                return;
+            }
+            
+            status.innerHTML = 'Processing... (Note: Full Word to PDF conversion requires server-side processing)';
+            status.className = 'status';
+            
+            try {
+                const { PDFDocument, rgb } = PDFLib;
+                const pdfDoc = await PDFDocument.create();
+                
+                // Add text before document if selected
+                if (customText && textPosition === 'before') {
+                    await addTextPage(pdfDoc, customText, textSize);
+                }
+                
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    
+                    // This is a placeholder - in a real app you'd send to a server for conversion
+                    const placeholderPage = pdfDoc.addPage([600, 800]);
+                    placeholderPage.drawText(`Word File: ${file.name}`, {
+                        x: 50,
+                        y: 750,
+                        size: 24,
+                        color: rgb(0, 0, 0),
+                    });
+                    
+                    placeholderPage.drawText('Note: Full Word to PDF conversion requires server-side processing.', {
+                        x: 50,
+                        y: 700,
+                        size: 14,
+                        color: rgb(0.5, 0, 0),
+                    });
+                }
+                
+                // Add text after document if selected
+                if (customText && textPosition === 'after') {
+                    await addTextPage(pdfDoc, customText, textSize);
+                }
+                
+                const pdfBytes = await pdfDoc.save();
+                saveAs(new Blob([pdfBytes], { type: 'application/pdf' }), 'converted_word.pdf');
+                
+                status.innerHTML = 'Placeholder PDF created. Full conversion requires server processing.';
+                status.className = 'status success';
+            } catch (error) {
+                console.error('Error during Word to PDF conversion:', error);
+                status.innerHTML = 'Error during conversion: ' + error.message;
+                status.className = 'status error';
+            }
+        }
+        
+        // Create PDF from text
+        async function createTextPdf() {
+            const content = document.getElementById('pdfContent').value;
+            const status = document.getElementById('textStatus');
+            const title = document.getElementById('textTitle').value || 'Untitled Document';
+            const author = document.getElementById('textAuthor').value || 'Unknown Author';
+            const font = document.getElementById('textFont').value;
+            const size = parseInt(document.getElementById('textSize').value);
+            const margin = parseInt(document.getElementById('textMargin').value);
+            
+            if (!content) {
+                status.innerHTML = 'Please enter some text to create a PDF.';
+                status.className = 'status error';
+                return;
+            }
+            
+            status.innerHTML = 'Creating PDF...';
+            status.className = 'status';
+            
+            try {
+                const { PDFDocument, rgb, StandardFonts } = PDFLib;
+                const pdfDoc = await PDFDocument.create();
+                
+                // Set document metadata
+                pdfDoc.setTitle(title);
+                pdfDoc.setAuthor(author);
+                pdfDoc.setCreationDate(new Date());
+                
+                // Add content
+                const pageWidth = 595; // A4 width in points (72ppi)
+                const pageHeight = 842; // A4 height
+                const marginPoints = margin * 2.83465; // Convert mm to points
+                
+                let currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
+                const textFont = await pdfDoc.embedFont(StandardFonts[font]);
+                
+                const lines = content.split('\n');
+                let yPosition = pageHeight - marginPoints;
+                
+                // Add title
+                currentPage.drawText(title, {
+                    x: marginPoints,
+                    y: yPosition,
+                    size: size + 4,
+                    font: textFont,
+                    color: rgb(0, 0, 0),
+                });
+                yPosition -= (size + 4) * 1.5;
+                
+                // Add author if provided
+                if (author) {
+                    currentPage.drawText(`By: ${author}`, {
+                        x: marginPoints,
+                        y: yPosition,
+                        size: size - 2,
+                        font: textFont,
+                        color: rgb(0.3, 0.3, 0.3),
+                    });
+                    yPosition -= size * 2;
+                }
+                
+                // Add content
+                for (const line of lines) {
+                    if (line.trim() === '') {
+                        yPosition -= size * 1.2;
+                        continue;
+                    }
+                    
+                    // Simple word wrapping
+                    const words = line.split(' ');
+                    let currentLine = '';
+                    
+                    for (const word of words) {
+                        const testLine = currentLine ? `${currentLine} ${word}` : word;
+                        const testWidth = textFont.widthOfTextAtSize(testLine, size);
+                        
+                        if (testWidth > (pageWidth - marginPoints * 2)) {
+                            // Draw the current line and start a new one
+                            currentPage.drawText(currentLine, {
+                                x: marginPoints,
+                                y: yPosition,
+                                size: size,
+                                font: textFont,
+                                color: rgb(0, 0, 0),
+                            });
+                            yPosition -= size * 1.2;
+                            currentLine = word;
+                            
+                            // Check if we need a new page
+                            if (yPosition < marginPoints) {
+                                currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
+                                yPosition = pageHeight - marginPoints;
+                                currentLine = '';
+                            }
+                        } else {
+                            currentLine = testLine;
+                        }
+                    }
+                    
+                    // Draw the remaining text in the line
+                    if (currentLine) {
+                        currentPage.drawText(currentLine, {
+                            x: marginPoints,
+                            y: yPosition,
+                            size: size,
+                            font: textFont,
+                            color: rgb(0, 0, 0),
+                        });
+                        yPosition -= size * 1.2;
+                    }
+                    
+                    // Check if we need a new page
+                    if (yPosition < marginPoints) {
+                        currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
+                        yPosition = pageHeight - marginPoints;
+                    }
+                }
+                
+                const pdfBytes = await pdfDoc.save();
+                saveAs(new Blob([pdfBytes], { type: 'application/pdf' }), `${title.replace(/[^a-z0-9]/gi, '_')}.pdf`);
+                
+                status.innerHTML = 'PDF created successfully!';
+                status.className = 'status success';
+            } catch (error) {
+                console.error('Error creating PDF:', error);
+                status.innerHTML = 'Error creating PDF: ' + error.message;
+                status.className = 'status error';
+            }
+        }
+        
+        // Helper function to read file as ArrayBuffer
+        function readFileAsArrayBuffer(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        }
+        
+        // Ad and account functions
+        function showPremiumModal() {
+            document.getElementById('premiumModal').style.display = 'flex';
+        }
+        
+        function hidePremiumModal() {
+            document.getElementById('premiumModal').style.display = 'none';
+        }
+        
+        function upgradeAccount() {
+            alert('Thank you for choosing to upgrade! This would redirect to payment in a real application.');
+            hidePremiumModal();
+        }
+        
+        // Rotate ads (mock)
+        const ads = [
+            "Upgrade to Premium for unlimited conversions!",
+            "Get 50% off your first year of Premium!",
+            "Try our Business Plan for team features!"
+        ];
+        
+        function rotateAd() {
+            const adContent = document.getElementById('adContent');
+            const randomAd = ads[Math.floor(Math.random() * ads.length)];
+            adContent.innerHTML = `<p>${randomAd}</p><button onclick="showPremiumModal()">Learn More</button>`;
+        }
+        
+        // Rotate ad every 10 seconds
+        setInterval(rotateAd, 10000);
+        rotateAd(); // Initial ad
+    </script>
+</body>
+</html>
