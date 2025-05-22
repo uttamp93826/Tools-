@@ -4,7 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Free PDF Tools - Convert, Merge, Lock PDF Files Online</title>
-    <meta name="description" content="Free online PDF tools to convert, merge, lock PDF files. No installation needed. Text to PDF,PDF merger and PDF locker tools.">
+    <meta name="description" content="Free online PDF tools to convert, merge, lock & unlock PDF files. Convert text to PDF, merge PDFs, protect PDFs with password - no installation needed. 100% free PDF solutions.">
+    <meta name="keywords" content="free pdf tools, online pdf converter, merge pdf files, pdf locker, pdf protection, text to pdf, pdf to text, pdf merger, unlock pdf, pdf tools online">
+    <meta name="author" content="PDF Tools">
+    <meta property="og:title" content="Free PDF Tools - Convert, Merge, Lock PDF Files Online">
+    <meta property="og:description" content="Free online PDF tools to convert, merge, lock PDF files. No installation needed. Text to PDF, PDF merger and PDF locker tools.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourusername.github.io">
+    <meta property="og:image" content="https://yourusername.github.io/images/pdf-tools-preview.jpg">
+    <link rel="canonical" href="https://yourusername.github.io" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -425,6 +433,17 @@
             font-size: 0.9rem;
         }
         
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            border: 0;
+        }
+        
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
@@ -477,7 +496,9 @@
         </div>
     </div>
     
-    <header>
+    <header itemscope itemtype="http://schema.org/WebSite">
+        <meta itemprop="name" content="PDF Tools"/>
+        <meta itemprop="url" content="https://yourusername.github.io"/>
         <div class="container header-content">
             <div class="logo">
                 <i class="fas fa-file-pdf"></i>
@@ -497,41 +518,46 @@
     
     <section class="hero">
         <div class="container hero-content">
-            <h1>Powerful PDF Tools for All Your Needs</h1>
-            <p>Convert, merge, lock and unlock PDF files with our free online tools. Fast, secure, and works on any device - no installation required!</p>
-            <a href="#tools" class="btn">Explore Tools <i class="fas fa-arrow-right"></i></a>
+            <h1>Free Online PDF Tools - Convert, Merge & Protect PDF Files</h1>
+            <p>Our 100% free PDF tools let you convert text to PDF, merge multiple PDFs, and password protect PDF documents. No registration required - process files directly in your browser on any device.</p>
+            <a href="#tools" class="btn">Try Our PDF Tools Now <i class="fas fa-arrow-right"></i></a>
         </div>
     </section>
     
-    <section id="tools" class="tools">
+    <section id="tools" class="tools" itemscope itemtype="http://schema.org/ItemList">
         <div class="container">
             <h2 class="section-title">Our PDF Tools</h2>
             <div class="tools-grid">
-                <div class="tool-card">
+                <div class="tool-card" itemprop="itemListElement" itemscope itemtype="http://schema.org/SoftwareApplication">
+                    <meta itemprop="applicationCategory" content="DocumentUtility"/>
                     <div class="tool-icon"><i class="fas fa-file-import"></i></div>
-                    <h3>Text & Image to PDF</h3>
-<p>Convert text and images to professional PDF format with just a few clicks.</p>
-<a href="/Tools-/pdf-converter.html" class="btn btn-secondary">Use Now <i class="fas fa-play"></i></a>
- 
-                               <div class="tool-card">
-                    <div class="tool-icon"><i class="fas fa-file-export"></i></div>
-                    <h3>PDF to Text</h3>
-                    <p>Extract text from your PDF files while preserving formatting. Perfect for editing or repurposing content.</p>
-                    <a href="#" class="btn btn-secondary">Use Now <i class="fas fa-play"></i></a>
+                    <h3 itemprop="name">Text & Image to PDF</h3>
+                    <p itemprop="description">Convert text and images to professional PDF format with just a few clicks. Perfect for creating documents from scratch.</p>
+                    <a href="/Tools-/pdf-converter.html" class="btn btn-secondary" itemprop="url">Use Now <i class="fas fa-play"></i></a>
                 </div>
                 
-                <div class="tool-card">
-                    <div class="tool-icon"><i class="fas fa-object-group"></i></div>
-                    <h3>PDF Merger</h3>
-<p>Combine multiple PDF files into a single document. Rearrange pages and optimize file size.</p>
-<a href="/Tools-/pdf-marg.html" class="btn btn-secondary">Use Now <i class="fas fa-play"></i></a>
-</div>
+                <div class="tool-card" itemprop="itemListElement" itemscope itemtype="http://schema.org/SoftwareApplication">
+                    <meta itemprop="applicationCategory" content="DocumentUtility"/>
+                    <div class="tool-icon"><i class="fas fa-file-export"></i></div>
+                    <h3 itemprop="name">PDF to Text</h3>
+                    <p itemprop="description">Extract text from your PDF files while preserving formatting. Perfect for editing or repurposing content.</p>
+                    <a href="#" class="btn btn-secondary" itemprop="url">Use Now <i class="fas fa-play"></i></a>
+                </div>
                 
-                <div class="tool-card">
+                <div class="tool-card" itemprop="itemListElement" itemscope itemtype="http://schema.org/SoftwareApplication">
+                    <meta itemprop="applicationCategory" content="DocumentUtility"/>
+                    <div class="tool-icon"><i class="fas fa-object-group"></i></div>
+                    <h3 itemprop="name">PDF Merger</h3>
+                    <p itemprop="description">Combine multiple PDF files into a single document. Rearrange pages and optimize file size.</p>
+                    <a href="/Tools-/pdf-marg.html" class="btn btn-secondary" itemprop="url">Use Now <i class="fas fa-play"></i></a>
+                </div>
+                
+                <div class="tool-card" itemprop="itemListElement" itemscope itemtype="http://schema.org/SoftwareApplication">
+                    <meta itemprop="applicationCategory" content="DocumentUtility"/>
                     <div class="tool-icon"><i class="fas fa-lock"></i></div>
-                    <h3>PDF Locker</h3>
-                    <p>Protect your PDFs with passwords and restrict printing, copying or editing of your documents.</p>
-                    <a href="#" class="btn btn-secondary">Use Now <i class="fas fa-play"></i></a>
+                    <h3 itemprop="name">PDF Locker</h3>
+                    <p itemprop="description">Protect your PDFs with passwords and restrict printing, copying or editing of your documents.</p>
+                    <a href="#" class="btn btn-secondary" itemprop="url">Use Now <i class="fas fa-play"></i></a>
                 </div>
             </div>
         </div>
@@ -539,13 +565,13 @@
     
     <section id="features" class="features">
         <div class="container">
-            <h2 class="section-title">Why Choose Our Tools</h2>
+            <h2 class="section-title">Why Our Free PDF Tools Are the Best</h2>
             <div class="features-grid">
                 <div class="feature-item">
                     <div class="feature-icon"><i class="fas fa-bolt"></i></div>
                     <div class="feature-content">
-                        <h3>Lightning Fast</h3>
-                        <p>Our tools process your files in seconds, saving you valuable time on document management.</p>
+                        <h3>Fast PDF Processing</h3>
+                        <p>Our online PDF converter and merger tools work instantly - convert documents in seconds without waiting.</p>
                     </div>
                 </div>
                 
@@ -676,5 +702,20 @@
             </div>
         </div>
     </footer>
+
+    <!-- Hidden SEO Content -->
+    <div class="sr-only">
+        <h2>Free PDF Tools Keywords</h2>
+        <p>Online PDF converter, merge PDF online, PDF protection tool, unlock PDF files, text to PDF converter, best free PDF tools, PDF merger online, secure PDF locker, document conversion tools, PDF utilities online.</p>
+        
+        <h2>Popular PDF Tool Searches</h2>
+        <ul>
+            <li>How to convert text to PDF online</li>
+            <li>Free tool to merge PDF files</li>
+            <li>Password protect PDF document</li>
+            <li>Best online PDF converter</li>
+            <li>Convert images to PDF free</li>
+        </ul>
+    </div>
 </body>
 </html>
